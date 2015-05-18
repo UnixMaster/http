@@ -15,7 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http/httputil"
+	//"net/http/httputil"
 	"strconv"
 	"strings"
 )
@@ -129,12 +129,15 @@ func (c *client) WriteRequest(req *Request) error {
 
 // ReadResponse unmarshalls a HTTP response.
 func (c *client) ReadResponse() (*Response, error) {
+	var head_cnt int
+
 	version, code, msg, err := c.ReadStatusLine()
 	var headers []Header
 	if err != nil {
 		return nil, fmt.Errorf("ReadStatusLine: %v", err)
 	}
 	for {
+		head_cnt++
 		var key, value string
 		var done bool
 		key, value, done, err = c.ReadHeader()
@@ -146,6 +149,12 @@ func (c *client) ReadResponse() (*Response, error) {
 			err = errors.New("invalid header")
 			break
 		}
+		if head_cnt >= 100 {
+			// TODO: Hardcode test count header lines
+			err = errors.New("invalid header number")
+			fmt.Println("ERR TO MENY HEAAD!s")
+			break
+		}
 		headers = append(headers, Header{key, value})
 	}
 	var resp = Response{
@@ -154,11 +163,14 @@ func (c *client) ReadResponse() (*Response, error) {
 		Headers: headers,
 		Body:    c.ReadBody(),
 	}
-	if l := resp.ContentLength(); l >= 0 {
-		resp.Body = io.LimitReader(resp.Body, l)
-	} else if resp.TransferEncoding() == "chunked" {
-		resp.Body = httputil.NewChunkedReader(resp.Body)
-	}
+	// if l := resp.ContentLength(); l >= 0 {
+	// 	resp.Body = io.LimitReader(resp.Body, l)
+	// } else if resp.TransferEncoding() == "chunked" {
+	// 	resp.Body = httputil.NewChunkedReader(resp.Body)
+	// }
+	// TODO: Hardcode limit read 512kb
+	resp.Body = io.LimitReader(resp.Body, 512000)
+
 	return &resp, err
 }
 

@@ -26,6 +26,7 @@ type Client struct {
 // it must be closed.
 func (c *Client) Do(method, url string, headers map[string][]string, body io.Reader, redir_counter int) (client.Status, map[string][]string, io.ReadCloser, error) {
 
+	// TODO: HRADCODE test for more redirects
 	if redir_counter > 5 {
 		err := errors.New("TOO MORE REDIRECTS")
 		fmt.Println("more redirs")
@@ -63,7 +64,7 @@ func (c *Client) Do(method, url string, headers map[string][]string, body io.Rea
 		return client.Status{}, nil, nil, err
 	}
 
-	// SetDeadline in 2 min
+	// TODO: HARDCODE SetDeadline in 2 min
 	conn.SetDeadline(time.Now().Add(time.Minute * 2))
 	// END
 
