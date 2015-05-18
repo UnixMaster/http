@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gorilla/http/client"
+	"github.com/UnixMaster/http/client"
 )
 
 // Dialer can dial a remote HTTP server.

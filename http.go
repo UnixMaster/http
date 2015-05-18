@@ -12,6 +12,7 @@
 package http
 
 import (
+	"fmt"
 	"io"
 )
 
@@ -29,7 +30,7 @@ var DefaultClient = Client{
 // Success.IsSuccess()) no data will be written and the status code will be
 // returned as an error.
 func Get(w io.Writer, url string) (int64, error) {
-	status, _, r, err := DefaultClient.Get(url, nil)
+	status, hd, r, err := DefaultClient.Get(url, nil)
 	if err != nil {
 		return 0, err
 	}
@@ -37,6 +38,7 @@ func Get(w io.Writer, url string) (int64, error) {
 	if !status.IsSuccess() {
 		return 0, &StatusError{status}
 	}
+	fmt.Println(hd)
 	return io.Copy(w, r)
 }
 

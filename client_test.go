@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gorilla/http/client"
+	"github.com/UnixMaster/http/client"
 )
 
 const postBody = "banananana"
